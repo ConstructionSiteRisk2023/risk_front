@@ -1,9 +1,12 @@
 import React, { useState, useEffect }  from "react";
+import Nav from "./Partials/Nav";
+import Router from "./Router";
 
 function App() {
   return (
     <div >
-      <div><h1>test</h1></div>
+      <Nav/>
+      <div><Router /></div>
     </div>
   );
 }
