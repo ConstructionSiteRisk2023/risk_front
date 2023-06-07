@@ -1,7 +1,7 @@
 import React from "react";
 
 
-const Today = () => {
+const Predict = () => {
   return (
     <div className="container">
 
@@ -11,4 +11,4 @@ const Today = () => {
   );
 };
 
-export default Today;
+export default Predict;
