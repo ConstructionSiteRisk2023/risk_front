@@ -2,6 +2,7 @@ import React from "react";
 
 
 const Predict = () => {
+  
   return (
     <div className="container">
 
