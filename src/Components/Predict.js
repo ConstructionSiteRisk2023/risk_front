@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+// import axios from "axios";
 
 const api_url = "http://localhost:4000/"
 
@@ -27,8 +27,10 @@ const Predict = () => {
   '지정 및 기초공사', '조적공사', '금속공사', '방수 및 방습공사', '지붕 및 홈통공사'];
   const [constructionType, setConstructionType] = useState("기타공사");
   const [checked, setChecked] = useState([]);
-  const checkList = ["공공민간구분", "날씨", "온도", "습도", "시설물분류", "작업프로세스", "작업자 수","공종"];
-  const [radioSelected, setRadioSelect] = useState("공종")
+  const checkList = ["공공민간구분", "날씨", "온도", "습도", "시설물 분류", "작업프로세스", "작업자수","공종"];
+  const [radioSelected, setRadioSelect] = useState("공종");
+  const [predictedResult, setPredictedResult] = useState("");
+  const [image, setImage] = useState("");
 
 
 
@@ -82,7 +84,7 @@ const Predict = () => {
         "습도" : humidity,
         "시설물 분류" : facilityType,
         "작업프로세스" : workProcess,
-        "작업자 수" : workers,
+        "작업자수" : workers,
         "공종" : constructionType,
       }
       console.log(data)
@@ -92,10 +94,42 @@ const Predict = () => {
           "Content-Type" : "application/json;charset=UTF-8"
         },
         body : JSON.stringify(data)
-      })
-      console.log(response)
-      console.log(response.Body)
+      });
+      const resjson = await response.json()
+      setPredictedResult(String(resjson.result))
     }
+  const  submitAnalyze = async () => {
+    const basedata = {
+      "공공민간구분" : publicType,
+      "날씨" : weatherType,
+      "온도" : temperature,
+      "습도" : humidity,
+      "시설물 분류" : facilityType,
+      "작업프로세스" : workProcess,
+      "작업자수" : workers,
+      "공종" : constructionType,
+    }
+    const data = {"value_count" : radioSelected};
+    checked.forEach(element => {
+      data[element] = basedata[element]
+    });
+
+    console.log(data);
+
+    const response = await fetch(api_url+"params",{
+      method : 'POST',
+      headers :{
+        "Content-Type" : "application/json;charset=UTF-8"
+      },
+      body : JSON.stringify(data)
+    });
+    // console.log(response)
+    const resimage = await response.blob()
+    // console.log(resimage.data)
+    var url = URL.createObjectURL(resimage);
+    setImage(url)
+    // console.log(image);
+  }
 
   return (
     <div className="container">
@@ -187,6 +221,9 @@ const Predict = () => {
         
         <div>
         <button onClick={submitPredict}>Predict</button>
+        {predictedResult!==""&&(
+                        <span>result : {predictedResult}</span>
+                    )}
         </div>
         <hr/>
         <div>
@@ -208,6 +245,13 @@ const Predict = () => {
               </option>
             ))}
           </select>
+        </div>
+        <div>
+        <button onClick={submitAnalyze}>Analyze</button>
+        {{image}!==""&&(
+          <img src={image} alt="icons" width="480" border="0"/>
+        )}
+        
         </div>
 
         </div>
